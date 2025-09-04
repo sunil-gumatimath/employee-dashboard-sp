@@ -5,9 +5,7 @@ import './EmployeeListPage.css'
 // Status configuration with colors and styling
 const STATUS_CONFIG = {
   'Active': { color: '#10b981', label: 'Active', icon: '●' },
-  'On Leave': { color: '#f59e0b', label: 'On Leave', icon: '○' },
-  'Probation': { color: '#3b82f6', label: 'Probation', icon: '▲' },
-  'Terminated': { color: '#ef4444', label: 'Terminated', icon: '✖' }
+  'On Leave': { color: '#f59e0b', label: 'On Leave', icon: '○' }
 };
 
 // Custom tooltip for department status chart
@@ -56,11 +54,9 @@ const mockEmployees = [
   { id: 6, name: 'Meera Iyer', position: 'Senior Developer', department: 'Engineering', status: 'Active' },
   { id: 7, name: 'Vikram Reddy', position: 'Marketing Manager', department: 'Marketing', status: 'Active' },
   { id: 8, name: 'Ananya Bose', position: 'Finance Analyst', department: 'Finance', status: 'Active' },
-  { id: 9, name: 'Dev Mishra', position: 'QA Engineer', department: 'Engineering', status: 'Probation' },
   { id: 10, name: 'Sneha Nair', position: 'Content Writer', department: 'Marketing', status: 'Active' },
   { id: 11, name: 'Arjun Desai', position: 'DevOps Engineer', department: 'Operations', status: 'Active' },
   { id: 12, name: 'Neha Kaur', position: 'Business Analyst', department: 'Product', status: 'Active' },
-  { id: 13, name: 'Rahul Choudhury', position: 'Technical Lead', department: 'Engineering', status: 'Terminated' },
   { id: 14, name: 'Pooja Menon', position: 'Recruitment Specialist', department: 'Human Resources', status: 'Active' },
   { id: 15, name: 'Siddharth Pillai', position: 'Sales Manager', department: 'Sales', status: 'On Leave' },
   { id: 16, name: 'Kavita Joshi', position: 'Project Manager', department: 'Operations', status: 'Active' },
@@ -70,9 +66,7 @@ const mockEmployees = [
   { id: 20, name: 'Divya Kapoor', position: 'Marketing Coordinator', department: 'Marketing', status: 'Active' },
   { id: 21, name: 'Naveen Sharma', position: 'Database Administrator', department: 'IT', status: 'Active' },
   { id: 22, name: 'Rashmi Tiwari', position: 'Training Specialist', department: 'Human Resources', status: 'On Leave' },
-  { id: 23, name: 'Vivek Jain', position: 'Financial Controller', department: 'Finance', status: 'Terminated' },
   { id: 24, name: 'Anjali Pandey', position: 'Customer Success Manager', department: 'Customer Support', status: 'Active' },
-  { id: 25, name: 'Suresh Rao', position: 'Security Analyst', department: 'Security', status: 'Probation' },
   { id: 26, name: 'Deepak Mehta', position: 'Frontend Developer', department: 'Engineering', status: 'Active' },
   { id: 27, name: 'Kriti Singh', position: 'Backend Developer', department: 'Engineering', status: 'Active' },
   { id: 28, name: 'Vijay Agrawal', position: 'Copywriter', department: 'Marketing', status: 'Active' },
@@ -80,8 +74,6 @@ const mockEmployees = [
   { id: 30, name: 'Ankur Jain', position: 'Network Engineer', department: 'IT', status: 'Active' },
   { id: 31, name: 'Maya Gupta', position: 'Operations Manager', department: 'Operations', status: 'Active' },
   { id: 32, name: 'Ravi Sharma', position: 'Senior Analyst', department: 'Finance', status: 'Active' },
-  { id: 33, name: 'Neha Kapoor', position: 'Talent Acquisition', department: 'Human Resources', status: 'Probation' },
-  { id: 34, name: 'Kiran Kumar', position: 'Product Designer', department: 'Design', status: 'Terminated' },
   { id: 35, name: 'Anisha Mukherjee', position: 'Data Scientist', department: 'Analytics', status: 'Active' },
 ]
 
@@ -199,16 +191,14 @@ const EmployeeListPage = () => {
   };
 
   // Calculate key metrics
-  const keyMetrics = useMemo(() => {
-    return {
-      totalEmployees: finalDisplayedEmployees.length,
-      activeEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'Active').length,
-      onLeaveEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'On Leave').length,
-      probationEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'Probation').length,
-      terminatedEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'Terminated').length,
-      departments: new Set(employees.map(emp => emp.department)).size
-    };
-  }, [finalDisplayedEmployees, employees]);
+    const keyMetrics = useMemo(() => {
+      return {
+        totalEmployees: finalDisplayedEmployees.length,
+        activeEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'Active').length,
+        onLeaveEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'On Leave').length,
+        departments: new Set(employees.map(emp => emp.department)).size
+      };
+    }, [finalDisplayedEmployees, employees]);
 
   // Prepare data for stacked bar chart (department vs status)
   const getDepartmentStatusData = useCallback(() => {
@@ -329,14 +319,6 @@ const EmployeeListPage = () => {
         <div className="metric-card" style={{ borderColor: STATUS_CONFIG['On Leave'].color }}>
           <h3 style={{ color: STATUS_CONFIG['On Leave'].color }}>On Leave</h3>
           <p className="metric-value">{keyMetrics.onLeaveEmployees}</p>
-        </div>
-        <div className="metric-card" style={{ borderColor: STATUS_CONFIG.Probation.color }}>
-          <h3 style={{ color: STATUS_CONFIG.Probation.color }}>Probation</h3>
-          <p className="metric-value">{keyMetrics.probationEmployees}</p>
-        </div>
-        <div className="metric-card" style={{ borderColor: STATUS_CONFIG.Terminated.color }}>
-          <h3 style={{ color: STATUS_CONFIG.Terminated.color }}>Terminated</h3>
-          <p className="metric-value">{keyMetrics.terminatedEmployees}</p>
         </div>
         <div className="metric-card">
           <h3>Departments</h3>

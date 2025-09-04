@@ -23,7 +23,7 @@ const Header = () => {
             <button className="menu-toggle" onClick={toggleSidebar}>
               ☰
             </button>
-            <h1>Employee-Management</h1>
+            <h1>Emp-Management</h1>
           </div>
           <div className="header-right">
             <div className="user-info">

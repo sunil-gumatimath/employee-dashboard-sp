@@ -108,16 +108,6 @@
   }
 }
 
-@media (max-width: 992px) {
-  .menu-toggle {
-    display: inline-block;
-  }
-
-  .header-left h1 {
-    margin: 0;
-  }
-}
-
 /* Sidebar overlay */
 .sidebar-overlay {
   display: none;
