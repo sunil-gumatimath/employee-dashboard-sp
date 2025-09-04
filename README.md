@@ -14,9 +14,10 @@ A modern, responsive web application for managing employee data, built with Reac
 - **Employee Directory**: Complete list of all employees with search and filter capabilities
 - **Detailed Profiles**: Individual employee pages with comprehensive information
 - **Department Organization**: Employees organized by departments for easy management
+- **Status Tracking**: Monitor employee status (Active, On Leave, etc.)
 
 ### Advanced Reporting
-- **Interactive Charts**: Bar charts, pie charts, and line graphs using Recharts
+- **Interactive Charts**: Bar charts, pie charts, line graphs, and composed charts using Recharts
 - **Department Analytics**: Distribution and performance metrics by department
 - **Hiring Trends**: Historical data visualization for recruitment insights
 - **Employee Status Tracking**: Active, on leave, and other status categories
@@ -72,41 +73,39 @@ A modern, responsive web application for managing employee data, built with Reac
 react-app/
 ├── public/                 # Static assets
 ├── src/
+│   ├── assets/             # Images, icons, and other static assets
 │   ├── components/         # Reusable UI components
-│   │   ├── common/        # Shared components (Header, Sidebar)
-│   │   ├── forms/         # Form components
-│   │   └── ui/            # UI-specific components
-│   ├── layouts/           # Page layout components
+│   ├── contexts/           # React contexts for state management
+│   ├── layouts/            # Page layout components
 │   │   ├── auth/          # Authentication layouts
 │   │   └── dashboard/     # Main dashboard layout
-│   ├── pages/             # Page components
+│   ├── pages/              # Page components
 │   │   ├── auth/          # Authentication pages
 │   │   ├── dashboard/     # Dashboard page
 │   │   ├── employees/     # Employee management pages
 │   │   ├── reports/       # Reports and analytics
 │   │   └── settings/      # Application settings
-│   ├── services/          # API services and data management
-│   ├── utils/             # Utility functions
-│   ├── contexts/          # React contexts for state management
-│   ├── App.jsx            # Main application component
-│   └── main.jsx           # Application entry point
-├── package.json           # Dependencies and scripts
-├── vite.config.js         # Vite configuration
-└── README.md              # Project documentation
+│   ├── services/           # API services and data management
+│   ├── utils/              # Utility functions
+│   ├── App.jsx             # Main application component
+│   └── main.jsx            # Application entry point
+├── package.json            # Dependencies and scripts
+├── vite.config.js          # Vite configuration
+└── README.md               # Project documentation
 ```
 
 ## 🎯 Usage
 
 ### Navigation
 - **Dashboard**: Overview of key metrics and recent activity
-- **Employees**: Browse and manage employee information
-- **Reports**: Generate and export detailed analytics
-- **Settings**: Configure application preferences
+- **Employees**: Browse and manage employee information with filtering capabilities
+- **Reports**: Generate and export detailed analytics with various chart types
+- **Settings**: Configure application preferences (implementation pending)
 
 ### Reports
 1. Navigate to the Reports page
 2. Use department and date filters to customize data
-3. View different chart types and metrics
+3. Switch between different report views (Overview, Departments, Hiring Trends)
 4. Export data as CSV for external analysis
 
 ## 🤝 Contributing
@@ -124,8 +123,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🔧 Development Notes
 
 - Built with modern React patterns and hooks
-- Uses CSS modules for scoped styling
-- Implements responsive design principles
+- Uses CSS for styling with responsive design principles
+- Implements responsive design for multiple device sizes
 - Follows ESLint configuration for code quality
 - Supports hot module replacement during development
 
