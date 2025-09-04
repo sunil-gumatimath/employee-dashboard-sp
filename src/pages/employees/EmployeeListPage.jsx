@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import './EmployeeListPage.css'
 
@@ -154,29 +154,29 @@ const EmployeeListPage = () => {
   }, [filteredEmployees]);
 
   // Prepare data for stacked bar chart (department vs status)
-  const getDepartmentStatusData = () => {
+  const getDepartmentStatusData = useCallback(() => {
     const departmentStatusCounts = {};
-    
+
     filteredEmployees.forEach(employee => {
       const dept = employee.department;
       const status = employee.status;
-      
+
       if (!departmentStatusCounts[dept]) {
         departmentStatusCounts[dept] = { name: dept, Active: 0, 'On Leave': 0 };
       }
-      
+
       // Ensure we only count valid statuses
       if (status === 'Active' || status === 'On Leave') {
         departmentStatusCounts[dept][status]++;
       }
     });
-    
+
     // Sort departments by total employee count (descending)
     return Object.values(departmentStatusCounts)
       .sort((a, b) => (b.Active + b['On Leave']) - (a.Active + a['On Leave']));
-  };
+  }, [filteredEmployees]);
 
-  const departmentStatusData = useMemo(() => getDepartmentStatusData(), [filteredEmployees])
+  const departmentStatusData = useMemo(() => getDepartmentStatusData(), [getDepartmentStatusData])
 
   return (
     <div className="employee-list-page">
