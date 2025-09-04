@@ -326,13 +326,13 @@ const EmployeeListPage = () => {
           <h3 style={{ color: STATUS_CONFIG.Active.color }}>Active</h3>
           <p className="metric-value">{keyMetrics.activeEmployees}</p>
         </div>
-        <div className="metric-card" style={{ borderColor: STATUS_CONFIG.Probation.color }}>
-          <h3 style={{ color: STATUS_CONFIG.Probation.color }}>Probation</h3>
-          <p className="metric-value">{keyMetrics.probationEmployees}</p>
-        </div>
         <div className="metric-card" style={{ borderColor: STATUS_CONFIG['On Leave'].color }}>
           <h3 style={{ color: STATUS_CONFIG['On Leave'].color }}>On Leave</h3>
           <p className="metric-value">{keyMetrics.onLeaveEmployees}</p>
+        </div>
+        <div className="metric-card" style={{ borderColor: STATUS_CONFIG.Probation.color }}>
+          <h3 style={{ color: STATUS_CONFIG.Probation.color }}>Probation</h3>
+          <p className="metric-value">{keyMetrics.probationEmployees}</p>
         </div>
         <div className="metric-card" style={{ borderColor: STATUS_CONFIG.Terminated.color }}>
           <h3 style={{ color: STATUS_CONFIG.Terminated.color }}>Terminated</h3>
@@ -471,13 +471,6 @@ const EmployeeListPage = () => {
                   wrapperStyle={{ zIndex: 1000 }}
                   cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
                   isAnimationActive={true}
-                />
-                <Legend
-                  wrapperStyle={{ paddingTop: '20px' }}
-                  iconType="circle"
-                  align="right"
-                  verticalAlign="top"
-                  height={40}
                 />
                 {Object.entries(STATUS_CONFIG).map(([statusKey, config]) => (
                   <Bar
