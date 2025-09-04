@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import './Sidebar.css'
 
 const Sidebar = () => {
@@ -7,24 +7,45 @@ const Sidebar = () => {
       <nav className="sidebar-nav">
         <ul>
           <li>
-            <Link to="/" className="nav-link">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+              end
+            >
               <span>Dashboard</span>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/employees" className="nav-link">
+            <NavLink
+              to="/employees"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
               <span>Employees</span>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/reports" className="nav-link">
+            <NavLink
+              to="/reports"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
               <span>Reports</span>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/settings" className="nav-link">
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                isActive ? "nav-link active" : "nav-link"
+              }
+            >
               <span>Settings</span>
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </nav>

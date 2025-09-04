@@ -56,10 +56,3 @@ input {
 input:focus {
   outline: 2px auto #0d6efd;
 }
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #333;
-    background-color: #f5f7fa;
-  }
-}

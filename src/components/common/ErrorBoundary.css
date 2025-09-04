@@ -1,0 +1,131 @@
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 24px;
+  background-color: var(--bg-color, #f5f7fa);
+}
+
+.error-boundary-content {
+  max-width: 500px;
+  text-align: center;
+  background-color: var(--card-bg, #ffffff);
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color, #e9ecef);
+}
+
+.error-boundary-content h2 {
+  color: var(--text-color, #333);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.error-boundary-content p {
+  color: var(--text-color, #666);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.error-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.error-actions .btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background-color: var(--nav-active, #0d6efd);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--nav-hover, #0b5ed7);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background-color: var(--button-bg, #f8f9fa);
+  color: var(--button-text, #495057);
+  border: 1px solid var(--border-color, #dee2e6);
+}
+
+.btn-secondary:hover {
+  background-color: var(--nav-hover, #e9ecef);
+  transform: translateY(-1px);
+}
+
+.error-details {
+  margin-top: 24px;
+  text-align: left;
+  background-color: var(--nav-hover, #f8f9fa);
+  border: 1px solid var(--border-color, #e9ecef);
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.error-details summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-color, #333);
+  margin-bottom: 8px;
+}
+
+.error-stack {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-color, #666);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color, #e9ecef);
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .error-boundary {
+    padding: 16px;
+    min-height: 70vh;
+  }
+
+  .error-boundary-content {
+    padding: 24px 16px;
+  }
+
+  .error-actions {
+    flex-direction: column;
+  }
+
+  .error-actions .btn {
+    width: 100%;
+  }
+
+  .error-stack {
+    font-size: 0.7rem;
+  }
+}
