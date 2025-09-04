@@ -17,12 +17,16 @@ A modern, responsive web application for managing employee data, built with Reac
 - **Status Tracking**: Monitor employee status (Active, On Leave, etc.)
 
 ### Advanced Reporting
-- **Interactive Charts**: Bar charts, pie charts, line graphs, and composed charts using Recharts
-- **Department Analytics**: Distribution and performance metrics by department
-- **Hiring Trends**: Historical data visualization for recruitment insights
-- **Employee Status Tracking**: Active, on leave, and other status categories
-- **Dynamic Filtering**: Filter reports by department and date range
-- **Export Functionality**: Download reports as CSV files
+- **Interactive Charts with Recharts**: Professional visualization library with tooltips and responsive containers
+  - Bar charts for department distribution
+  - Pie charts for employee status breakdown
+  - Line charts with area fill for hiring trends analysis
+- **Summary Dashboard Cards**: Key metrics display including total employees, active employees, on leave, and average tenure
+- **Real-time Smart Filtering**: Dual filtering system for department and date range with dynamic data updates
+- **Comprehensive Department Analytics**: Detailed distribution and performance metrics across all departments
+- **Historical Hiring Trends**: Timeline visualization of recruitment patterns and growth patterns
+- **Employee Status Tracking**: Real-time monitoring of employee status categories
+- **CSV Export Functionality**: One-click export of complete report data including metrics, charts, and filtered datasets
 
 ### User Experience
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
@@ -72,7 +76,7 @@ A modern, responsive web application for managing employee data, built with Reac
 ```
 react-app/
 ├── public/                 # Static assets
-├── src/
+└── src/
 │   ├── assets/             # Images, icons, and other static assets
 │   ├── components/         # Reusable UI components
 │   ├── contexts/           # React contexts for state management
@@ -89,9 +93,12 @@ react-app/
 │   ├── utils/              # Utility functions
 │   ├── App.jsx             # Main application component
 │   └── main.jsx            # Application entry point
+├── .gitignore              # Git ignore patterns
+├── eslint.config.js        # ESLint configuration
 ├── package.json            # Dependencies and scripts
-├── vite.config.js          # Vite configuration
-└── README.md               # Project documentation
+├── README.md               # Project documentation
+├── REPORTS_IMPROVEMENTS.md # Reports page improvement documentation
+└── vite.config.js          # Vite configuration
 ```
 
 ## 🎯 Usage
@@ -103,10 +110,15 @@ react-app/
 - **Settings**: Configure application preferences (implementation pending)
 
 ### Reports
-1. Navigate to the Reports page
-2. Use department and date filters to customize data
-3. Switch between different report views (Overview, Departments, Hiring Trends)
-4. Export data as CSV for external analysis
+1. Navigate to the Reports page from the main navigation
+2. Use the department dropdown to filter by specific departments
+3. Select a date range using the date range selector for temporal filtering
+4. Switch between tabbed report views:
+   - **Overview**: Summary cards with key metrics and combined charts
+   - **Departments**: Detailed department-specific statistics and breakdowns
+   - **Hiring Trends**: Historical hiring data and timeline visualizations
+5. Interact with charts by hovering for detailed tooltips and information
+6. Export complete report data as CSV files with a single click
 
 ## 🤝 Contributing
 
