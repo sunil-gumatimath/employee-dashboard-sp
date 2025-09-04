@@ -6,21 +6,23 @@ import './EmployeeListPage.css'
 const CustomDeptTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
-    const total = data.Active + (data['On Leave'] || 0);
-    const activePercent = total > 0 ? ((data.Active / total) * 100).toFixed(1) : "0.0";
-    const onLeavePercent = total > 0 ? (((data['On Leave'] || 0) / total) * 100).toFixed(1) : "0.0";
+    const activeCount = data.Active || 0;
+    const onLeaveCount = data['On Leave'] || 0;
+    const total = activeCount + onLeaveCount;
+    const activePercent = total > 0 ? ((activeCount / total) * 100).toFixed(1) : "0.0";
+    const onLeavePercent = total > 0 ? ((onLeaveCount / total) * 100).toFixed(1) : "0.0";
 
     return (
       <div className="custom-tooltip dept-tooltip">
         <h4 className="tooltip-title">{label}</h4>
         <div className="tooltip-item">
           <span className="tooltip-label">Active:</span>
-          <span className="tooltip-value active">{data.Active} ({activePercent}%)</span>
+          <span className="tooltip-value active">{activeCount} ({activePercent}%)</span>
         </div>
-        {data['On Leave'] > 0 && (
+        {onLeaveCount > 0 && (
           <div className="tooltip-item">
             <span className="tooltip-label">On Leave:</span>
-            <span className="tooltip-value on-leave">{data['On Leave']} ({onLeavePercent}%)</span>
+            <span className="tooltip-value on-leave">{onLeaveCount} ({onLeavePercent}%)</span>
           </div>
         )}
         <hr />
@@ -117,13 +119,18 @@ const EmployeeListPage = () => {
         departmentStatusCounts[dept] = { name: dept, Active: 0, 'On Leave': 0 };
       }
       
-      departmentStatusCounts[dept][status]++;
+      // Ensure we only count valid statuses
+      if (status === 'Active' || status === 'On Leave') {
+        departmentStatusCounts[dept][status]++;
+      }
     });
     
-    return Object.values(departmentStatusCounts);
+    // Sort departments by total employee count (descending)
+    return Object.values(departmentStatusCounts)
+      .sort((a, b) => (b.Active + b['On Leave']) - (a.Active + a['On Leave']));
   };
 
-  const departmentStatusData = getDepartmentStatusData()
+  const departmentStatusData = useMemo(() => getDepartmentStatusData(), [filteredEmployees])
 
   return (
     <div className="employee-list-page">
@@ -221,38 +228,46 @@ const EmployeeListPage = () => {
             </div>
           </div>
           <div className="chart-wrapper">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" debounce={100}>
               <BarChart
                 data={departmentStatusData}
                 margin={{
-                  top: 30,
-                  right: 40,
+                  top: 20,
+                  right: 20,
                   left: 20,
                   bottom: 80,
                 }}
+                barCategoryGap="15%"
               >
                 <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
                 <XAxis
                   dataKey="name"
                   interval={0}
-                  angle={-35}
+                  angle={-45}
                   textAnchor="end"
                   height={100}
-                  tick={{ fontSize: 11, fill: '#666' }}
+                  tick={{ fontSize: 12, fill: '#666' }}
                   tickMargin={8}
+                  tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value}
                 />
                 <YAxis
                   tick={{ fontSize: 12, fill: '#666' }}
                   allowDecimals={false}
                   tickMargin={10}
+                  domain={[0, 'dataMax + 1']}
                 />
                 <Tooltip 
                   content={<CustomDeptTooltip />} 
-                  wrapperStyle={{ zIndex: 100 }}
+                  wrapperStyle={{ zIndex: 1000 }}
+                  cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+                  isAnimationActive={false}
                 />
                 <Legend
                   wrapperStyle={{ paddingTop: '20px' }}
                   iconType="circle"
+                  align="right"
+                  verticalAlign="top"
+                  height={40}
                 />
                 <Bar
                   dataKey="Active"
@@ -277,12 +292,20 @@ const EmployeeListPage = () => {
               <span className="insight-value">{departmentStatusData.length}</span>
             </div>
             <div className="insight-item">
-              <span className="insight-label">Avg per Dept:</span>
-              <span className="insight-value">{departmentStatusData.length > 0 ? Math.round(keyMetrics.totalEmployees / departmentStatusData.length) : 0}</span>
+              <span className="insight-label">Largest Dept:</span>
+              <span className="insight-value">
+                {departmentStatusData.length > 0 
+                  ? Math.max(...departmentStatusData.map(d => d.Active + (d['On Leave'] || 0))) 
+                  : 0}
+              </span>
             </div>
             <div className="insight-item">
               <span className="insight-label">Active Rate:</span>
-              <span className="insight-value">{keyMetrics.totalEmployees > 0 ? Math.round((keyMetrics.activeEmployees / keyMetrics.totalEmployees) * 100) : 0}%</span>
+              <span className="insight-value">
+                {keyMetrics.totalEmployees > 0 
+                  ? Math.round((keyMetrics.activeEmployees / keyMetrics.totalEmployees) * 100) 
+                  : 0}%
+              </span>
             </div>
           </div>
         </div>

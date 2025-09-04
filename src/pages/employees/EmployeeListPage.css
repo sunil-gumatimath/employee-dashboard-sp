@@ -151,6 +151,7 @@
   overflow: hidden;
   position: relative;
   z-index: 1 !important; /* Ensure charts don't overlay sidebar */
+  contain: layout; /* Improve rendering performance and containment */
 }
 
 .chart-container h3 {
@@ -162,15 +163,17 @@
 
 .chart-wrapper {
   width: 100%;
-  height: 330px;
+  height: 350px;
+  min-height: 300px;
   overflow: hidden;
   position: relative;
+  contain: strict; /* Ensure chart stays within bounds */
 }
 
 /* Enhanced chart styling */
 .enhanced-chart {
   position: relative;
-  overflow: visible;
+  overflow: hidden; /* Changed from visible to hidden to contain chart */
 }
 
 .chart-header {
@@ -223,9 +226,10 @@
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-  z-index: 1 !important; /* Lower than sidebar overlay */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  z-index: 1000 !important;
+  position: relative;
 }
 
 .tooltip-title {
@@ -329,13 +333,17 @@
     flex-direction: column;
     align-items: center;
   }
+  
+  .chart-wrapper {
+    min-height: 320px;
+  }
 }
 
 .employee-table-container {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .employee-table {
@@ -385,6 +393,7 @@
 
   .chart-wrapper {
     height: 300px;
+    min-height: 280px;
   }
 
   .employee-list-page {
@@ -393,6 +402,15 @@
   
   .chart-container {
     z-index: 1 !important; /* Ensure charts don't overlay sidebar */
+  }
+
+  .employee-table th,
+  .employee-table td {
+    padding: 12px 16px;
+  }
+  
+  .chart-wrapper {
+    height: 320px;
   }
 }
 
@@ -420,7 +438,8 @@
   }
 
   .chart-wrapper {
-    height: 280px;
+    height: 350px;
+    min-height: 320px;
   }
 
   .chart-container {
@@ -440,6 +459,10 @@
   .employee-list-page {
     margin-left: 0;
     padding: 16px;
+  }
+  
+  .custom-tooltip.dept-tooltip {
+    min-width: 180px;
   }
 }
 
@@ -462,7 +485,8 @@
   }
 
   .chart-wrapper {
-    height: 250px;
+    height: 300px;
+    min-height: 280px;
   }
 
   .employee-list-page {
@@ -471,6 +495,16 @@
   
   .chart-container {
     z-index: 1 !important; /* Ensure charts don't overlay sidebar */
+    padding: 12px;
+  }
+  
+  .chart-header {
+    margin-bottom: 16px;
+  }
+  
+  .custom-tooltip.dept-tooltip {
+    min-width: 160px;
+    padding: 12px;
   }
 }
 
