@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useToast } from '../../contexts/ToastContext'
+import { useToast } from '../../hooks/useToast'
 import Skeleton from '../../components/common/Skeleton'
 import './DashboardPage.css'
 

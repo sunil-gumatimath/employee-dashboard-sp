@@ -1,30 +1,40 @@
 import { useState, useMemo, useCallback } from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, LabelList } from 'recharts'
 import './EmployeeListPage.css'
+
+// Status configuration with colors and styling
+const STATUS_CONFIG = {
+  'Active': { color: '#10b981', label: 'Active', icon: '●' },
+  'On Leave': { color: '#f59e0b', label: 'On Leave', icon: '○' },
+  'Probation': { color: '#3b82f6', label: 'Probation', icon: '▲' },
+  'Terminated': { color: '#ef4444', label: 'Terminated', icon: '✖' }
+};
 
 // Custom tooltip for department status chart
 const CustomDeptTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
-    const activeCount = data.Active || 0;
-    const onLeaveCount = data['On Leave'] || 0;
-    const total = activeCount + onLeaveCount;
-    const activePercent = total > 0 ? ((activeCount / total) * 100).toFixed(1) : "0.0";
-    const onLeavePercent = total > 0 ? ((onLeaveCount / total) * 100).toFixed(1) : "0.0";
+    const statusCounts = Object.entries(STATUS_CONFIG).reduce((acc, [statusKey, config]) => {
+      const count = data[statusKey] || 0;
+      return count > 0 ? [...acc, { status: statusKey, count, config }] : acc;
+    }, []);
+
+    const total = data.total || 0;
 
     return (
       <div className="custom-tooltip dept-tooltip">
         <h4 className="tooltip-title">{label}</h4>
-        <div className="tooltip-item">
-          <span className="tooltip-label">Active:</span>
-          <span className="tooltip-value active">{activeCount} ({activePercent}%)</span>
-        </div>
-        {onLeaveCount > 0 && (
-          <div className="tooltip-item">
-            <span className="tooltip-label">On Leave:</span>
-            <span className="tooltip-value on-leave">{onLeaveCount} ({onLeavePercent}%)</span>
-          </div>
-        )}
+        {statusCounts.map(({ status, count, config }) => {
+          const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+          return (
+            <div key={status} className="tooltip-item">
+              <span className="tooltip-label">{config.icon} {config.label}:</span>
+              <span className="tooltip-value" style={{ color: config.color }}>
+                {count} ({percentage}%)
+              </span>
+            </div>
+          );
+        })}
         <hr />
         <div className="tooltip-total">
           <span>Total:</span>
@@ -36,7 +46,7 @@ const CustomDeptTooltip = ({ active, payload, label }) => {
   return null;
 };
 
-// Mock employee data with Indian names
+// Mock employee data with Indian names and expanded status types
 const mockEmployees = [
   { id: 1, name: 'Aarav Patel', position: 'Software Engineer', department: 'Engineering', status: 'Active' },
   { id: 2, name: 'Aditi Sharma', position: 'Product Manager', department: 'Product', status: 'Active' },
@@ -46,11 +56,11 @@ const mockEmployees = [
   { id: 6, name: 'Meera Iyer', position: 'Senior Developer', department: 'Engineering', status: 'Active' },
   { id: 7, name: 'Vikram Reddy', position: 'Marketing Manager', department: 'Marketing', status: 'Active' },
   { id: 8, name: 'Ananya Bose', position: 'Finance Analyst', department: 'Finance', status: 'Active' },
-  { id: 9, name: 'Dev Mishra', position: 'QA Engineer', department: 'Engineering', status: 'Active' },
+  { id: 9, name: 'Dev Mishra', position: 'QA Engineer', department: 'Engineering', status: 'Probation' },
   { id: 10, name: 'Sneha Nair', position: 'Content Writer', department: 'Marketing', status: 'Active' },
   { id: 11, name: 'Arjun Desai', position: 'DevOps Engineer', department: 'Operations', status: 'Active' },
   { id: 12, name: 'Neha Kaur', position: 'Business Analyst', department: 'Product', status: 'Active' },
-  { id: 13, name: 'Rahul Choudhury', position: 'Technical Lead', department: 'Engineering', status: 'Active' },
+  { id: 13, name: 'Rahul Choudhury', position: 'Technical Lead', department: 'Engineering', status: 'Terminated' },
   { id: 14, name: 'Pooja Menon', position: 'Recruitment Specialist', department: 'Human Resources', status: 'Active' },
   { id: 15, name: 'Siddharth Pillai', position: 'Sales Manager', department: 'Sales', status: 'On Leave' },
   { id: 16, name: 'Kavita Joshi', position: 'Project Manager', department: 'Operations', status: 'Active' },
@@ -59,10 +69,20 @@ const mockEmployees = [
   { id: 19, name: 'Amitabh Saxena', position: 'Chief Technology Officer', department: 'Engineering', status: 'Active' },
   { id: 20, name: 'Divya Kapoor', position: 'Marketing Coordinator', department: 'Marketing', status: 'Active' },
   { id: 21, name: 'Naveen Sharma', position: 'Database Administrator', department: 'IT', status: 'Active' },
-  { id: 22, name: 'Rashmi Tiwari', position: 'Training Specialist', department: 'Human Resources', status: 'Active' },
-  { id: 23, name: 'Vivek Jain', position: 'Financial Controller', department: 'Finance', status: 'Active' },
+  { id: 22, name: 'Rashmi Tiwari', position: 'Training Specialist', department: 'Human Resources', status: 'On Leave' },
+  { id: 23, name: 'Vivek Jain', position: 'Financial Controller', department: 'Finance', status: 'Terminated' },
   { id: 24, name: 'Anjali Pandey', position: 'Customer Success Manager', department: 'Customer Support', status: 'Active' },
-  { id: 25, name: 'Suresh Rao', position: 'Security Analyst', department: 'Security', status: 'Active' },
+  { id: 25, name: 'Suresh Rao', position: 'Security Analyst', department: 'Security', status: 'Probation' },
+  { id: 26, name: 'Deepak Mehta', position: 'Frontend Developer', department: 'Engineering', status: 'Active' },
+  { id: 27, name: 'Kriti Singh', position: 'Backend Developer', department: 'Engineering', status: 'Active' },
+  { id: 28, name: 'Vijay Agrawal', position: 'Copywriter', department: 'Marketing', status: 'Active' },
+  { id: 29, name: 'Simran Chauhan', position: 'Graphic Designer', department: 'Design', status: 'On Leave' },
+  { id: 30, name: 'Ankur Jain', position: 'Network Engineer', department: 'IT', status: 'Active' },
+  { id: 31, name: 'Maya Gupta', position: 'Operations Manager', department: 'Operations', status: 'Active' },
+  { id: 32, name: 'Ravi Sharma', position: 'Senior Analyst', department: 'Finance', status: 'Active' },
+  { id: 33, name: 'Neha Kapoor', position: 'Talent Acquisition', department: 'Human Resources', status: 'Probation' },
+  { id: 34, name: 'Kiran Kumar', position: 'Product Designer', department: 'Design', status: 'Terminated' },
+  { id: 35, name: 'Anisha Mukherjee', position: 'Data Scientist', department: 'Analytics', status: 'Active' },
 ]
 
 const EmployeeListPage = () => {
@@ -71,6 +91,7 @@ const EmployeeListPage = () => {
   const [filterDepartment, setFilterDepartment] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
+  const [chartFilters, setChartFilters] = useState({ department: '', status: '' })
 
   // Get unique departments for filter dropdown
   const departments = useMemo(() => {
@@ -98,16 +119,35 @@ const EmployeeListPage = () => {
     });
   }, [employees, searchTerm, filterDepartment, filterStatus]);
 
+  // Filter employees based on chart click
+  const employeesWithChartFilters = useMemo(() => {
+    if (!chartFilters.department && !chartFilters.status) {
+      return filteredEmployees;
+    }
+
+    return filteredEmployees.filter(employee => {
+      const matchesDept = !chartFilters.department || employee.department === chartFilters.department;
+      const matchesStatus = !chartFilters.status || employee.status === chartFilters.status;
+      return matchesDept && matchesStatus;
+    });
+  }, [filteredEmployees, chartFilters]);
+
+  // Update the displayed employees to include chart filters
+  const finalDisplayedEmployees = useMemo(() => employeesWithChartFilters, [employeesWithChartFilters]);
+
   const sortedEmployees = useMemo(() => {
-    if (!sortConfig.key) return filteredEmployees;
-    
-    return [...filteredEmployees].sort((a, b) => {
-      // Handle status sorting (Active should come before On Leave)
+    if (!sortConfig.key) return employeesWithChartFilters;
+
+    return [...employeesWithChartFilters].sort((a, b) => {
+      // Handle status sorting with multiple statuses
       if (sortConfig.key === 'status') {
-        const statusOrder = { 'Active': 1, 'On Leave': 2 };
+        const statusOrder = Object.keys(STATUS_CONFIG).reduce((acc, statusType, index) => ({
+          ...acc,
+          [statusType]: index + 1
+        }), {});
         const statusA = statusOrder[a.status] || 0;
         const statusB = statusOrder[b.status] || 0;
-        
+
         if (statusA < statusB) {
           return sortConfig.direction === 'asc' ? -1 : 1;
         }
@@ -116,7 +156,7 @@ const EmployeeListPage = () => {
         }
         return 0;
       }
-      
+
       // Handle other string comparisons
       if (a[sortConfig.key] < b[sortConfig.key]) {
         return sortConfig.direction === 'asc' ? -1 : 1;
@@ -126,7 +166,7 @@ const EmployeeListPage = () => {
       }
       return 0;
     });
-  }, [filteredEmployees, sortConfig]);
+  }, [employeesWithChartFilters, sortConfig]);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -134,6 +174,21 @@ const EmployeeListPage = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+  };
+
+  // Handle chart bar click to filter employees
+  const handleChartClick = (data, status) => {
+    if (!data) return;
+
+    setChartFilters(prevFilters => {
+      if (prevFilters.department === data.name && prevFilters.status === status) {
+        // Clear filters if same department/status clicked
+        return { department: '', status: '' };
+      } else {
+        // Apply new filters
+        return { department: data.name, status };
+      }
+    });
   };
 
   const getSortIcon = (columnName) => {
@@ -146,12 +201,14 @@ const EmployeeListPage = () => {
   // Calculate key metrics
   const keyMetrics = useMemo(() => {
     return {
-      totalEmployees: filteredEmployees.length,
-      activeEmployees: filteredEmployees.filter(emp => emp.status === 'Active').length,
-      onLeaveEmployees: filteredEmployees.filter(emp => emp.status === 'On Leave').length,
-      departments: new Set(filteredEmployees.map(emp => emp.department)).size
+      totalEmployees: finalDisplayedEmployees.length,
+      activeEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'Active').length,
+      onLeaveEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'On Leave').length,
+      probationEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'Probation').length,
+      terminatedEmployees: finalDisplayedEmployees.filter(emp => emp.status === 'Terminated').length,
+      departments: new Set(employees.map(emp => emp.department)).size
     };
-  }, [filteredEmployees]);
+  }, [finalDisplayedEmployees, employees]);
 
   // Prepare data for stacked bar chart (department vs status)
   const getDepartmentStatusData = useCallback(() => {
@@ -162,18 +219,27 @@ const EmployeeListPage = () => {
       const status = employee.status;
 
       if (!departmentStatusCounts[dept]) {
-        departmentStatusCounts[dept] = { name: dept, Active: 0, 'On Leave': 0 };
+        departmentStatusCounts[dept] = {
+          name: dept,
+          total: 0,
+          // Initialize all status types to 0
+          ...Object.keys(STATUS_CONFIG).reduce((acc, statusType) => ({
+            ...acc,
+            [statusType]: 0
+          }), {})
+        };
       }
 
-      // Ensure we only count valid statuses
-      if (status === 'Active' || status === 'On Leave') {
+      // Count employees for valid statuses
+      if (STATUS_CONFIG[status]) {
         departmentStatusCounts[dept][status]++;
+        departmentStatusCounts[dept].total++;
       }
     });
 
     // Sort departments by total employee count (descending)
     return Object.values(departmentStatusCounts)
-      .sort((a, b) => (b.Active + b['On Leave']) - (a.Active + a['On Leave']));
+      .sort((a, b) => b.total - a.total);
   }, [filteredEmployees]);
 
   const departmentStatusData = useMemo(() => getDepartmentStatusData(), [getDepartmentStatusData])
@@ -256,13 +322,21 @@ const EmployeeListPage = () => {
           <h3>Total Employees</h3>
           <p className="metric-value">{keyMetrics.totalEmployees}</p>
         </div>
-        <div className="metric-card">
-          <h3>Active</h3>
+        <div className="metric-card" style={{ borderColor: STATUS_CONFIG.Active.color }}>
+          <h3 style={{ color: STATUS_CONFIG.Active.color }}>Active</h3>
           <p className="metric-value">{keyMetrics.activeEmployees}</p>
         </div>
-        <div className="metric-card">
-          <h3>On Leave</h3>
+        <div className="metric-card" style={{ borderColor: STATUS_CONFIG.Probation.color }}>
+          <h3 style={{ color: STATUS_CONFIG.Probation.color }}>Probation</h3>
+          <p className="metric-value">{keyMetrics.probationEmployees}</p>
+        </div>
+        <div className="metric-card" style={{ borderColor: STATUS_CONFIG['On Leave'].color }}>
+          <h3 style={{ color: STATUS_CONFIG['On Leave'].color }}>On Leave</h3>
           <p className="metric-value">{keyMetrics.onLeaveEmployees}</p>
+        </div>
+        <div className="metric-card" style={{ borderColor: STATUS_CONFIG.Terminated.color }}>
+          <h3 style={{ color: STATUS_CONFIG.Terminated.color }}>Terminated</h3>
+          <p className="metric-value">{keyMetrics.terminatedEmployees}</p>
         </div>
         <div className="metric-card">
           <h3>Departments</h3>
@@ -341,15 +415,27 @@ const EmployeeListPage = () => {
           <div className="chart-header">
             <h3>Employees by Department & Status</h3>
             <div className="chart-legend">
-              <div className="legend-item">
-                <div className="legend-color active"></div>
-                <span>Active Employees</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color on-leave"></div>
-                <span>On Leave</span>
-              </div>
+              {Object.entries(STATUS_CONFIG).map(([status, config]) => (
+                <div key={status} className="legend-item">
+                  <div
+                    className="legend-color"
+                    style={{ backgroundColor: config.color }}
+                  ></div>
+                  <span>{config.label}</span>
+                </div>
+              ))}
             </div>
+            {(chartFilters.department || chartFilters.status) && (
+              <div className="chart-filters">
+                <span>Filtered by: {chartFilters.department} {chartFilters.status && `- ${chartFilters.status}`}</span>
+                <button
+                  className="clear-chart-filters"
+                  onClick={() => setChartFilters({ department: '', status: '' })}
+                >
+                  Clear
+                </button>
+              </div>
+            )}
           </div>
           <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height="100%" debounce={100}>
@@ -357,7 +443,7 @@ const EmployeeListPage = () => {
                 data={departmentStatusData}
                 margin={{
                   top: 20,
-                  right: 20,
+                  right: 30,
                   left: 20,
                   bottom: 80,
                 }}
@@ -378,13 +464,13 @@ const EmployeeListPage = () => {
                   tick={{ fontSize: 12, fill: '#666' }}
                   allowDecimals={false}
                   tickMargin={10}
-                  domain={[0, 'dataMax + 1']}
+                  domain={[0, 'dataMax + 2']}
                 />
-                <Tooltip 
-                  content={<CustomDeptTooltip />} 
+                <Tooltip
+                  content={<CustomDeptTooltip />}
                   wrapperStyle={{ zIndex: 1000 }}
                   cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
-                  isAnimationActive={false}
+                  isAnimationActive={true}
                 />
                 <Legend
                   wrapperStyle={{ paddingTop: '20px' }}
@@ -393,20 +479,25 @@ const EmployeeListPage = () => {
                   verticalAlign="top"
                   height={40}
                 />
-                <Bar
-                  dataKey="Active"
-                  name="Active"
-                  fill="#10b981"
-                  stackId="status"
-                  radius={[6, 6, 0, 0]}
-                />
-                <Bar
-                  dataKey="On Leave"
-                  name="On Leave"
-                  fill="#f59e0b"
-                  stackId="status"
-                  radius={[6, 6, 0, 0]}
-                />
+                {Object.entries(STATUS_CONFIG).map(([statusKey, config]) => (
+                  <Bar
+                    key={statusKey}
+                    dataKey={statusKey}
+                    name={config.label}
+                    fill={config.color}
+                    stackId="status"
+                    radius={[6, 6, 0, 0]}
+                    onClick={(data) => handleChartClick(data, statusKey)}
+                    cursor="pointer"
+                  >
+                    <LabelList
+                      dataKey={statusKey}
+                      position="center"
+                      formatter={(value) => value > 0 ? value : ''}
+                      style={{ fill: 'white', fontWeight: 'bold', fontSize: '12px' }}
+                    />
+                  </Bar>
+                ))}
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -418,16 +509,16 @@ const EmployeeListPage = () => {
             <div className="insight-item">
               <span className="insight-label">Largest Dept:</span>
               <span className="insight-value">
-                {departmentStatusData.length > 0 
-                  ? Math.max(...departmentStatusData.map(d => d.Active + (d['On Leave'] || 0))) 
+                {departmentStatusData.length > 0
+                  ? Math.max(...departmentStatusData.map(d => d.total))
                   : 0}
               </span>
             </div>
             <div className="insight-item">
               <span className="insight-label">Active Rate:</span>
               <span className="insight-value">
-                {keyMetrics.totalEmployees > 0 
-                  ? Math.round((keyMetrics.activeEmployees / keyMetrics.totalEmployees) * 100) 
+                {keyMetrics.totalEmployees > 0
+                  ? Math.round((keyMetrics.activeEmployees / keyMetrics.totalEmployees) * 100)
                   : 0}%
               </span>
             </div>
@@ -462,7 +553,7 @@ const EmployeeListPage = () => {
                 <td>{employee.department}</td>
                 <td>
                   <span className={`status-badge ${employee.status.toLowerCase().replace(' ', '-')}`}>
-                    {employee.status === 'Active' ? '●' : '○'} {employee.status}
+                    {STATUS_CONFIG[employee.status]?.icon || '○'} {employee.status}
                   </span>
                 </td>
                 <td>
