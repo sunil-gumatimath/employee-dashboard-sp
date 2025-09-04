@@ -1,8 +1,13 @@
-# Reports Page Improvements - Fixed Version
+# Changelog
 
-## Issue Fixed
+All notable changes to this project will be documented in this file.
 
-I identified and fixed a syntax error in the ReportsPage.jsx file where string literals were not properly escaped, causing the "Unterminated string constant" error.
+## [Unreleased]
+
+### Fixed
+- Syntax error in ReportsPage.jsx causing "Unterminated string constant" error due to improperly escaped string literals
+
+### Enhanced - Reports Page Improvements
 
 ## Key Improvements Made
 
