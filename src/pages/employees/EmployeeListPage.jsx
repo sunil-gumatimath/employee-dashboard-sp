@@ -70,6 +70,7 @@ const EmployeeListPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterDepartment, setFilterDepartment] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
 
   // Get unique departments for filter dropdown
   const departments = useMemo(() => {
@@ -96,6 +97,51 @@ const EmployeeListPage = () => {
       return matchesSearch && matchesDepartment && matchesStatus;
     });
   }, [employees, searchTerm, filterDepartment, filterStatus]);
+
+  const sortedEmployees = useMemo(() => {
+    if (!sortConfig.key) return filteredEmployees;
+    
+    return [...filteredEmployees].sort((a, b) => {
+      // Handle status sorting (Active should come before On Leave)
+      if (sortConfig.key === 'status') {
+        const statusOrder = { 'Active': 1, 'On Leave': 2 };
+        const statusA = statusOrder[a.status] || 0;
+        const statusB = statusOrder[b.status] || 0;
+        
+        if (statusA < statusB) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (statusA > statusB) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      }
+      
+      // Handle other string comparisons
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [filteredEmployees, sortConfig]);
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (columnName) => {
+    if (sortConfig.key === columnName) {
+      return sortConfig.direction === 'asc' ? ' \u2191' : ' \u2193';
+    }
+    return ' \u2195';
+  };
 
   // Calculate key metrics
   const keyMetrics = useMemo(() => {
@@ -137,16 +183,72 @@ const EmployeeListPage = () => {
       <div className="employee-list-header">
         <h2>Employee Directory</h2>
         <div className="header-actions">
-          <input
-            type="text"
-            placeholder="Search employees..."
-            className="search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+          <div className="search-wrapper">
+            <input
+              type="text"
+              placeholder="Search employees..."
+              className={`search-input ${searchTerm ? 'filtered' : ''}`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button 
+                className="clear-search-btn"
+                onClick={() => setSearchTerm('')}
+                aria-label="Clear search"
+              >
+                &times;
+              </button>
+            )}
+          </div>
           <button className="btn btn-primary">Add Employee</button>
         </div>
       </div>
+      
+      {/* Active Filters Display */}
+      {(searchTerm || filterDepartment || filterStatus) && (
+        <div className="active-filters">
+          <h3>Active Filters:</h3>
+          <div className="filter-tags">
+            {searchTerm && (
+              <span className="filter-tag">
+                Search: "{searchTerm}"
+                <button 
+                  className="remove-tag-btn"
+                  onClick={() => setSearchTerm('')}
+                  aria-label="Remove search filter"
+                >
+                  &times;
+                </button>
+              </span>
+            )}
+            {filterDepartment && (
+              <span className="filter-tag">
+                Department: {filterDepartment}
+                <button 
+                  className="remove-tag-btn"
+                  onClick={() => setFilterDepartment('')}
+                  aria-label="Remove department filter"
+                >
+                  &times;
+                </button>
+              </span>
+            )}
+            {filterStatus && (
+              <span className="filter-tag">
+                Status: {filterStatus}
+                <button 
+                  className="remove-tag-btn"
+                  onClick={() => setFilterStatus('')}
+                  aria-label="Remove status filter"
+                >
+                  &times;
+                </button>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
       
       {/* Key Metrics Section */}
       <div className="metrics-grid">
@@ -172,32 +274,54 @@ const EmployeeListPage = () => {
       <div className="filters-section">
         <div className="filter-group">
           <label htmlFor="department-filter">Department</label>
-          <select 
-            id="department-filter"
-            className="filter-select"
-            value={filterDepartment}
-            onChange={(e) => setFilterDepartment(e.target.value)}
-          >
-            <option value="">All Departments</option>
-            {departments.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
-            ))}
-          </select>
+          <div className="filter-wrapper">
+            <select 
+              id="department-filter"
+              className={`filter-select ${filterDepartment ? 'filtered' : ''}`}
+              value={filterDepartment}
+              onChange={(e) => setFilterDepartment(e.target.value)}
+            >
+              <option value="">All Departments</option>
+              {departments.map(dept => (
+                <option key={dept} value={dept}>{dept}</option>
+              ))}
+            </select>
+            {filterDepartment && (
+              <button 
+                className="clear-filter-btn"
+                onClick={() => setFilterDepartment('')}
+                aria-label="Clear department filter"
+              >
+                &times;
+              </button>
+            )}
+          </div>
         </div>
         
         <div className="filter-group">
           <label htmlFor="status-filter">Status</label>
-          <select 
-            id="status-filter"
-            className="filter-select"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="">All Statuses</option>
-            {statuses.map(status => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
+          <div className="filter-wrapper">
+            <select 
+              id="status-filter"
+              className={`filter-select ${filterStatus ? 'filtered' : ''}`}
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+            >
+              <option value="">All Statuses</option>
+              {statuses.map(status => (
+                <option key={status} value={status}>{status}</option>
+              ))}
+            </select>
+            {filterStatus && (
+              <button 
+                className="clear-filter-btn"
+                onClick={() => setFilterStatus('')}
+                aria-label="Clear status filter"
+              >
+                &times;
+              </button>
+            )}
+          </div>
         </div>
         
         <button 
@@ -207,7 +331,7 @@ const EmployeeListPage = () => {
             setFilterStatus('');
           }}
         >
-          Clear Filters
+          Clear All Filters
         </button>
       </div>
       
@@ -315,22 +439,30 @@ const EmployeeListPage = () => {
         <table className="employee-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Department</th>
-              <th>Status</th>
+              <th onClick={() => handleSort('name')} className="sortable">
+                Name{getSortIcon('name')}
+              </th>
+              <th onClick={() => handleSort('position')} className="sortable">
+                Position{getSortIcon('position')}
+              </th>
+              <th onClick={() => handleSort('department')} className="sortable">
+                Department{getSortIcon('department')}
+              </th>
+              <th onClick={() => handleSort('status')} className="sortable">
+                Status{getSortIcon('status')}
+              </th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredEmployees.map(employee => (
+            {sortedEmployees.map(employee => (
               <tr key={employee.id}>
                 <td>{employee.name}</td>
                 <td>{employee.position}</td>
                 <td>{employee.department}</td>
                 <td>
                   <span className={`status-badge ${employee.status.toLowerCase().replace(' ', '-')}`}>
-                    {employee.status}
+                    {employee.status === 'Active' ? '●' : '○'} {employee.status}
                   </span>
                 </td>
                 <td>
